@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    build: ./docker/nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./public:/var/www/public:delegated
+    depends_on:
+      - php
+    networks:
+      - cnd_network
+
+  php:
+    user: '${USER_ID}:${GROUP_ID}'
+    build: ./docker/php
+    volumes:
+      - .:/var/www:delegated
+    depends_on:
+      - database
+      - redis
+    networks:
+      - cnd_network
+
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - cnd_network
+
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      PGDATA: /var/lib/postgresql/new_data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - ./new_data:/var/lib/postgresql/new_data
+    networks:
+      - cnd_network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - cnd_network
+    volumes:
+      - redis_data:/data
+    restart: always
+
+networks:
+  cnd_network:
+
+volumes:
+  database_data:
+  redis_data:

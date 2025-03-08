@@ -1,0 +1,4 @@
+
+Wallets_routes:
+    resource: '../src/Core/Presentation/Controller/'
+    type: attribute
