@@ -166,6 +166,15 @@ tasks:
       - echo "http://127.0.0.1:8000/ "
       - echo "http://127.0.0.1:8000/api/docs"
     silent: false
+  # startAll
+  start:
+    desc: Start all
+    cmds:
+      - composer install
+      - docker compose up -d --build
+      - echo "http://127.0.0.1:8000/ "
+      - echo "http://127.0.0.1:8000/api/docs"
+    silent: false
 
   down:
     desc: Stop all Docker containers
