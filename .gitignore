@@ -1,4 +1,4 @@
-
+##git rm --cached .env
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -28,3 +28,6 @@ new_data/
 .env.prod
 deploy
 .env
+
+doc/HELP.md
+
