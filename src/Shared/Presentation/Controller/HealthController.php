@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 class HealthController extends BaseController{
 
-	#[Route('/api/health', name: 'health')]
+	#[Route('/api/health', name: 'health', methods: ['GET'])]
 	public function index(){
 		return $this->json(
 			[

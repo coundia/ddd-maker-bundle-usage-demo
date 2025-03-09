@@ -13,7 +13,7 @@ echo "🛠️ Déploiement de Symfony..."
 sudo chown -R $USER:$USER /var/www/$PROJECT_NAME
 
 git pull origin main
-
+sudo php bin/console doctrine:migrations:migrate
 sudo php bin/console cache:clear --env=prod
 sudo php bin/console cache:warmup --env=prod
 

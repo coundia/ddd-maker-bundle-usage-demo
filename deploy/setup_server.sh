@@ -18,6 +18,10 @@ sudo apt install -y curl software-properties-common unzip git
 echo "🛠️ Installing PHP 8.3 and necessary extensions..."
 sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-mbstring php8.3-xml php8.3-bcmath php8.3-intl php8.3-zip php8.3-curl php8.3-mysql php8.3-fpm php8.3-gd
 
+sudo apt install php8.3-sqlite3
+
+sudo apt install php8.3-mysql
+
 echo "✅ Verifying PHP installation..."
 php -v
  
