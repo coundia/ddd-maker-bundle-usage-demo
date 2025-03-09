@@ -57,8 +57,21 @@ sudo bash -c "cat > /etc/nginx/sites-available/$PROJECT_NAME <<EOF
 server {
     listen 80;
     server_name $DOMAIN www.$DOMAIN;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name $DOMAIN www.$DOMAIN;
     root $PROJECT_DIR/public;
     index index.php index.html;
+
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    client_max_body_size 100M;
 
     location / {
         try_files \\\$uri /index.php?\\\$query_string;
@@ -79,10 +92,7 @@ server {
 
     error_log /var/log/nginx/$PROJECT_NAME.error.log;
     access_log /var/log/nginx/$PROJECT_NAME.access.log;
-
-    client_max_body_size 100M;
 }
-
 EOF"
 
 echo "✅ Checking Nginx configuration..."
@@ -90,7 +100,9 @@ sudo nginx -t
 
 echo "🔗 Enabling Nginx configuration..."
 sudo ln -s /etc/nginx/sites-available/$PROJECT_NAME /etc/nginx/sites-enabled/
+sudo systemctl restart php8.3-fpm
 sudo systemctl restart nginx
+
 
 echo "🔐 Setting up SSL with Let's Encrypt..."
 sudo apt install -y certbot python3-certbot-nginx
