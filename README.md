@@ -26,8 +26,8 @@ docker compose up -d --build
 ```
 composer install
 ```
+
 ```
-cp .env.example .env
 symfony serve
 ```
 
