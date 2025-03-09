@@ -8,8 +8,8 @@ DB_USER="${PROJECT_NAME}_user"
 DB_PASS="password_secure"
 PROJECT_DIR="/var/www/$PROJECT_NAME"
 GIT_REPO="git@github.com:coundia/ddd-maker-bundle-usage-demo.git"
-PORT_SERVER = 8080
-SERVER_IP = 37.187.39.2
+PORT_SERVER=8080
+SERVER_IP=37.187.39.2
 
 echo "🚀 Updating system packages..."
 sudo apt update && sudo apt upgrade -y
@@ -120,12 +120,13 @@ EOF"
 sudo ufw allow $PORT_SERVER/tcp
 sudo ufw reload
 
-echo "✅ Checking Nginx configuration..."
-sudo nginx -t
-
 echo "🔗 Enabling Nginx configuration..."
 sudo ln -s /etc/nginx/sites-available/$PROJECT_NAME /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
+
+sudo cat /etc/nginx/sites-enabled/$PROJECT_NAME
+echo "✅ Checking Nginx configuration..."
+sudo nginx -t
 
 echo "🔐 Setting up SSL with Let's Encrypt..."
 sudo apt install -y certbot python3-certbot-nginx
