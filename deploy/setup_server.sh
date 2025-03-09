@@ -8,6 +8,8 @@ DB_USER="${PROJECT_NAME}_user"
 DB_PASS="password_secure"
 PROJECT_DIR="/var/www/$PROJECT_NAME"
 GIT_REPO="git@github.com:coundia/ddd-maker-bundle-usage-demo.git"
+PORT_SERVER = 8080
+SERVER_IP = 37.187.39.2
 
 echo "🚀 Updating system packages..."
 sudo apt update && sudo apt upgrade -y
@@ -42,6 +44,7 @@ sudo mysql -u root -p -e "
     CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';
     GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
     FLUSH PRIVILEGES;"
+
 
 echo "🌐 Installing Nginx..."
 sudo apt install -y nginx
@@ -82,7 +85,40 @@ server {
 
     client_max_body_size 100M;
 }
+
+server {
+    listen $PORT_SERVER;
+    server_name $SERVER_IP;
+    root $PROJECT_DIR/public;
+    index index.php index.html;
+
+    location / {
+        try_files \\\$uri /index.php?\\\$query_string;
+    }
+
+    location ~ ^/index\.php(/|$) {
+        include fastcgi_params;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME \\\$realpath_root\\\$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT \\\$realpath_root;
+        internal;
+    }
+
+    location ~ \.php$ {
+        return 404;
+    }
+
+    error_log /var/log/nginx/$PROJECT_NAME.$PORT_SERVER.error.log;
+    access_log /var/log/nginx/$PROJECT_NAME.$PORT_SERVER.access.log;
+
+    client_max_body_size 100M;
+}
 EOF"
+
+
+sudo ufw allow $PORT_SERVER/tcp
+sudo ufw reload
 
 echo "✅ Checking Nginx configuration..."
 sudo nginx -t
